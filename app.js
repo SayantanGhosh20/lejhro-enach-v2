@@ -32,6 +32,7 @@ app.post('/genTxnId', (req, res)=>{
 app.post('/genHash', (req, res)=>{
     let salt = '9204754820OCADIJ';
     let data = req.body.plainPass.concat(salt);
+    console.log(data);
     let hash = crypto.createHash('sha512', salt).update(data).digest('hex');
     res.send(hash);
 })
@@ -76,7 +77,7 @@ app.post('/response', (req, res)=>{
     fs.appendFile(fileName, responseData ,(err)=>{
         if (err) throw err
     })
-    // res.redirect('http://127.0.0.1:5501/main.html');
+    // res.redirect('http://3.144.38.100:5501/main.html');
 })
 
 app.post('/testRequest', (req, res)=>{
