@@ -105,8 +105,7 @@
             border: none;
             outline: none;
             border-radius: 10px;
-            width: 10%;
-            height: 9%;
+            padding: 10px 30px;
             font-size: 26px;
             letter-spacing: 1px;
             color: #efefef;
@@ -118,6 +117,7 @@
         .veil{
             position: absolute;
             top: -100%;
+            /* top: 0%; */
             left: 0;
             width: 100%;
             height: 100%;
@@ -191,6 +191,14 @@
             background-color: royalblue;
             margin-bottom: 0.5em;
         }
+
+        @media only screen and (max-width: 600px) {
+            .confirmPanel{
+                width: 80%;
+                height: 65%;
+            }   
+        }
+
     </style>
 </head>
 <body>
@@ -336,6 +344,8 @@
                     'merchantId': 'T877420',
                     'currency': 'INR',
                     'consumerId': 'c964636',
+                    "consumerMobileNo": "",
+                    "consumerEmailId": "",
                     'txnId': '14822975811',
                     'items': [{
                         'itemId': 'First',
@@ -348,6 +358,9 @@
                         'BUTTON_COLOR_CODE_1': '#1969bb',
                         'BUTTON_COLOR_CODE_2': '#FFFFFF'
                     },
+                'accountNo': '',
+                'accountHolderName': '',
+                'ifscCode': '',
                 'accountType': 'Saving',
                 'debitStartDate': '10-07-2022',
                 'debitEndDate': '01-03-2047',
@@ -365,6 +378,14 @@
                 let freqValue = freq.value;
                 let startDateValue = startDate.value;
                 let endDateValue = endDate.value;
+                let newStartDate = startDateValue.split('-')[2] + '-' + startDateValue.split('-')[1] + '-' + startDateValue.split('-')[0];
+                let newEndDate = endDateValue.split('-')[2] + '-' + endDateValue.split('-')[1] + '-' + endDateValue.split('-')[0];
+
+                // console.log(newStartDate);
+                // console.log(newEndDate);
+
+                startDateValue = newStartDate;
+                endDateValue = newEndDate;
 
                 let inputStatus1 = inputCheck(uName, uNameValue);
                 let inputStatus2 = inputCheck(uId, uIdValue);
@@ -396,12 +417,12 @@
 
                         },
                         function(result){
-                            console.log('genTxnId');
+                            // console.log('genTxnId');
                             let txnId = result;
                             let merchantId = 'T877420';
                             let totalamount = '1'; 
                             let amountType = 'M';
-                            
+                            // cIdValue = 'c964636';
                             let plainPass = merchantId + '|' + txnId + '|' + totalamount + '|' + '|' + cIdValue + '|' + '|' + '|' + cStartDateValue + '|' + cEndDateValue + '|' + cAmountValue + '|' + amountType + '|' + cFreqValue + '|' + '|' + '|' + '|' + '|';
 
                             $.post(
@@ -410,7 +431,7 @@
                                     plainPass : plainPass
                                 },
                                 function(result){
-                                    console.log('genHash');
+                                    // console.log('genHash');
                                     let hashVal = result;
                                     configJson.consumerData.token = hashVal.toString();
                                     configJson.consumerData.consumerId = cIdValue.toString();
@@ -433,6 +454,7 @@
                                             })
                                         },
                                         function(result){
+                                            // console.log(configJson);
                                             veil.style.top = '0';
                                             veil.style.left = '0';
                                         }
@@ -461,9 +483,15 @@
             })
             })
 
-            function handleResponse(){
-
-            }
+            function handleResponse(res) {
+                if (typeof res != 'undefined' && typeof res.paymentMethod != 'undefined' && typeof res.paymentMethod.paymentTransaction != 'undefined' && typeof res.paymentMethod.paymentTransaction.statusCode != 'undefined' && res.paymentMethod.paymentTransaction.statusCode == '0300') {
+                    // success block
+                } else if (typeof res != 'undefined' && typeof res.paymentMethod != 'undefined' && typeof res.paymentMethod.paymentTransaction != 'undefined' && typeof res.paymentMethod.paymentTransaction.statusCode != 'undefined' && res.paymentMethod.paymentTransaction.statusCode == '0398') {
+                    // initiated block
+                } else {
+                    // error block
+                }
+            };
 
             function inputCheck(element, value){
             let errElement = element.nextElementSibling;
